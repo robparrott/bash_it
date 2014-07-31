@@ -2,6 +2,13 @@
 
 Cloned from https://github.com/revans/bash-it
 
+Install this for yourself by doing this:
+
+```
+cd 
+git clone https://github.com/robparrott/bash_it/ .bash_it
+```
+
 Install by adding to your `.bash_profile`:
 
 ```
