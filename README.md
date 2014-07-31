@@ -9,7 +9,8 @@ cd
 git clone https://github.com/robparrott/bash_it/ .bash_it
 ```
 
-Install by adding to your `.bash_profile`:
+
+Enable it by adding to your `.bash_profile`:
 
 ```
 #----------------------------
