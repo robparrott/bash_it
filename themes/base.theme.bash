@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 THEME_PROMPT_HOST='\H'
+
+SCM_CHECK=${SCM_CHECK:=true}
+
 SCM_THEME_PROMPT_DIRTY=' ✗'
 SCM_THEME_PROMPT_CLEAN=' ✓'
 SCM_THEME_PROMPT_PREFIX=' |'
@@ -31,7 +34,9 @@ RBFU_THEME_PROMPT_PREFIX=' |'
 RBFU_THEME_PROMPT_SUFFIX='|'
 
 function scm {
-  if [[ -f .git/HEAD ]]; then SCM=$SCM_GIT
+
+  if [[ "$SCM_CHECK" = false ]]; then SCM=$SCM_NONE
+  elif [[ -f .git/HEAD ]]; then SCM=$SCM_GIT
   elif which git &> /dev/null && [[ -n "$(git symbolic-ref HEAD 2> /dev/null)" ]]; then SCM=$SCM_GIT
   elif [[ -d .hg ]]; then SCM=$SCM_HG
   elif which hg &> /dev/null && [[ -n "$(hg root 2> /dev/null)" ]]; then SCM=$SCM_HG
@@ -74,8 +79,8 @@ function git_prompt_vars {
   SCM_GIT_BEHIND=''
   SCM_GIT_STASH=''
   if [[ "$(git config --get bash-it.hide-status)" != "1" ]]; then
-    local status="$(git status -bs --porcelain 2> /dev/null)"
-    if [[ -n "$(grep -v ^# <<< "${status}")" ]]; then
+    local status="$(git status -b --porcelain 2> /dev/null || git status --porcelain 2> /dev/null)"
+    if [[ -n "${status}" ]] && [[ "${status}" != "\n" ]] && [[ -n "$(grep -v ^# <<< "${status}")" ]]; then
       SCM_DIRTY=1
       SCM_STATE=${GIT_THEME_PROMPT_DIRTY:-$SCM_THEME_PROMPT_DIRTY}
     else
@@ -89,9 +94,9 @@ function git_prompt_vars {
   SCM_PREFIX=${GIT_THEME_PROMPT_PREFIX:-$SCM_THEME_PROMPT_PREFIX}
   SCM_SUFFIX=${GIT_THEME_PROMPT_SUFFIX:-$SCM_THEME_PROMPT_SUFFIX}
 
-  local ref=$(git symbolic-ref -q --short HEAD 2> /dev/null)
+  local ref=$(git symbolic-ref -q HEAD 2> /dev/null)
   if [[ -n "$ref" ]]; then
-    SCM_BRANCH=$ref
+    SCM_BRANCH=${ref#refs/heads/}
     SCM_IS_BRANCH=1
     SCM_IS_TAG=0
   else
@@ -99,7 +104,6 @@ function git_prompt_vars {
     SCM_IS_TAG=1
     SCM_IS_BRANCH=0
   fi
-  # SCM_BRANCH=$(git symbolic-ref -q --short HEAD || git describe --tags --exact-match 2> /dev/null)
   SCM_CHANGE=$(git rev-parse HEAD 2>/dev/null)
   local ahead_re='.+ahead ([0-9]+).+'
   local behind_re='.+behind ([0-9]+).+'
@@ -140,7 +144,9 @@ function hg_prompt_vars {
 function rvm_version_prompt {
   if which rvm &> /dev/null; then
     rvm=$(rvm tools identifier) || return
-    echo -e "$RVM_THEME_PROMPT_PREFIX$rvm$RVM_THEME_PROMPT_SUFFIX"
+    if [ $rvm != "system" ]; then
+      echo -e "$RVM_THEME_PROMPT_PREFIX$rvm$RVM_THEME_PROMPT_SUFFIX"
+    fi
   fi
 }
 
@@ -148,7 +154,9 @@ function rbenv_version_prompt {
   if which rbenv &> /dev/null; then
     rbenv=$(rbenv version-name) || return
     $(rbenv commands | grep -q gemset) && gemset=$(rbenv gemset active 2> /dev/null) && rbenv="$rbenv@${gemset%% *}"
-    echo -e "$RBENV_THEME_PROMPT_PREFIX$rbenv$RBENV_THEME_PROMPT_SUFFIX"
+    if [ $rbenv != "system" ]; then
+      echo -e "$RBENV_THEME_PROMPT_PREFIX$rbenv$RBENV_THEME_PROMPT_SUFFIX"
+    fi
   fi
 }
 
@@ -208,4 +216,3 @@ function scm_char {
 function prompt_char {
     scm_char
 }
-
