@@ -1,48 +1,46 @@
 # Bash it
 
-**Bash it** is a mash up of my own bash commands and scripts, other bash stuff I have found.
+Cloned from https://github.com/revans/bash-it
 
-(And a shameless ripoff of [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh). :)
-
-Includes autocompletion, themes, aliases, custom functions, a few stolen pieces from Steve Losh, and more.
-
-## Install
-
-1. Check a clone of this repo: `git clone https://github.com/revans/bash-it.git ~/.bash_it`
-2. Run `~/.bash_it/install.sh` (it automatically backs up your `~/.bash_profile`)
-3. Edit your `~/.bash_profile` file in order to customize bash-it.
-
-**NOTE:**
-The install script will also prompt you asking if you use [Jekyll](https://github.com/mojombo/jekyll).
-This is to set up the `.jekyllconfig` file, which stores info necessary to use the Jekyll plugin.
-
-
-## Help Screens
+Install this for yourself by doing this:
 
 ```
-bash-it show aliases        # shows installed and available aliases
-bash-it show completions    # shows installed and available completions
-bash-it show plugins        # shows installed and available plugins
-bash-it help aliases        # shows help for installed aliases
-bash-it help completions    # shows help for installed completions
-bash-it help plugins        # shows help for installed plugins
+cd 
+git clone https://github.com/robparrott/bash_it/ .bash_it
 ```
 
-## Your Custom scripts, aliases, and functions
 
-For custom scripts, and aliases, just create the following files (they'll be ignored by the git repo):
+Enable it by adding to your `.bash_profile`:
 
-* `aliases/custom.aliases.bash`
-* `lib/custom.bash`
-* `plugins/custom.plugins.bash`
+```
+#----------------------------
+# Setup BASH-IT
+#
+#    https://github.com/revans/bash-it
+#
+#----------------------------
 
-Anything in the custom directory will be ignored, with the exception of `custom/example.bash`.
+_setup_bash_it () {
 
-## Themes
+  # Load RVM, if you are using it
+  [[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
 
-There are a few bash it themes.  If you've created your own custom prompts, I'd love it if you shared with everyone else!  Just submit a Pull Request to me (revans).
+  # Add rvm gems and nginx to the path
+  export PATH=$PATH:~/.gem/ruby/1.8/bin:/opt/nginx/sbin
 
-You can see the theme screenshots  [here](https://github.com/revans/bash-it/wiki/Themes)
+  # Path to the bash it configuration
+  export BASH_IT=$HOME/.bash_it
+
+  # Lock and Load a custom theme file
+  # location /.bash_it/themes/
+  export BASH_IT_THEME='parrott'
+
+  # Your place for hosting Git repos. I use this for private repos.
+  export GIT_HOSTING='git@github.com'
+
+  # Set my editor and git editor
+  export EDITOR="/usr/local/bin/joe "
+  export GIT_EDITOR='/usr/local/bin/joe '
 
 ## Misc
 
@@ -68,15 +66,29 @@ It is possible for themes to ignore the `SCM_CHECK` flag and query specific vers
 
 ## Help out
 
-I think everyone has their own custom scripts accumulated over time.  And so, following in the footsteps of oh-my-zsh, bash it is a framework for easily customizing your bash shell. Everyone's got a custom toolbox, so let's start making them even better, **as a community!**
+  # Set the path nginx
+  #export NGINX_PATH='/opt/nginx'
 
-Send me a pull request and I'll merge it as long as it looks good. If you change an existing command, please give an explanation why. That will help a lot when I merge your changes in.
+  # Don't check mail when opening terminal.
+  unset MAILCHECK
 
-Thanks, and happing bashing!
+  # Change this to your console based IRC client of choice.
+  export IRC_CLIENT='irssi'
 
+  # Set this to the command you use for todo.txt-cli
+  export TODO="t" #echo (None)"
 
-## Contributors
+  # Set vcprompt executable path for scm advance info in prompt (demula theme)
+  # https://github.com/xvzf/vcprompt
+  export VCPROMPT_EXECUTABLE=/usr/local/bin/vcprompt
 
-* [List of contributors][contribute]
+  # Load Bash It
+  source $BASH_IT/bash_it.sh
 
-[contribute]: https://github.com/revans/bash-it/contributors
+}
+```
+
+Then somewhere appropriate in your `.bash_profile` enable it with
+```
+_setup_bash_it
+```
